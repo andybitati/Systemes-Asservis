@@ -23,69 +23,65 @@ def export_to_csv(data, headers, filename="resultat.csv"):
         headers (list of str): noms des colonnes
         filename (str): nom du fichier exporté
     """
-    # Conversion en tableau numpy si nécessaire
     data = np.array(data)
-
-    # Si vecteur 1D → transformer en matrice colonne (Nx1)
     if data.ndim == 1:
         data = data.reshape(-1, 1)
 
     with open(filename, mode='w', newline='', encoding='utf-8') as f:
         writer = csv.writer(f)
-        writer.writerow(headers)           # En-tête
-        writer.writerows(data.tolist())    # Données ligne par ligne
+        writer.writerow(headers)
+        writer.writerows(data.tolist())
+
     print(f"✅ CSV exporté : {filename}")
 
-def export_to_pdf(text, filename="rapport.pdf", title="ControlSysLab - Rapport Global", image_path=None):
+def export_to_pdf(text, filename="rapport.pdf", title="ControlSysLab - Rapport Global", image_paths=None):
     """
-    Exporte un rapport avec :
-    - Un en-tête (titre, date)
-    - Un texte formaté (multi-ligne)
-    - Une image insérée à la fin (ex. : graphique PNG)
+    Génère un rapport PDF avec :
+    - Titre principal + date
+    - Contenu du rapport (texte multi-lignes)
+    - Toutes les images générées automatiquement insérées à la fin
 
     Args:
-        text (str): contenu du rapport (avec \n pour les sauts de ligne)
-        filename (str): nom du fichier PDF à générer
-        title (str): titre principal en haut du rapport
-        image_path (str): chemin vers une image PNG à insérer (optionnel)
+        text (str): contenu principal du rapport
+        filename (str): nom du fichier PDF à créer
+        title (str): titre principal du document
+        image_paths (list[str] ou None): chemins vers les images PNG à insérer
     """
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font("Arial", 'B', 16)
-
-    # Titre centré
     pdf.cell(0, 10, title, ln=True, align="C")
 
-    # Date
     pdf.set_font("Arial", '', 12)
     pdf.cell(0, 10, f"Généré le {datetime.today().strftime('%d/%m/%Y à %Hh%M')}", ln=True, align="C")
     pdf.ln(10)
 
-    # Texte principal
+    # Texte du rapport
     pdf.set_font("Arial", size=12)
     for line in text.split('\n'):
         pdf.multi_cell(0, 10, line)
 
-    # Image (facultative)
-    if image_path:
-        if os.path.exists(image_path):
-            pdf.ln(10)
-            pdf.set_font("Arial", 'I', 11)
-            pdf.cell(0, 10, "Figure : Réponse du système PID", ln=True)
-            pdf.image(image_path, x=30, w=150)
-        else:
-            print(f"⚠️ Image non trouvée : {image_path}")
+    # Insertion des images (toutes celles spécifiées)
+    if image_paths:
+        for img_path in image_paths:
+            if os.path.exists(img_path):
+                pdf.add_page()
+                pdf.set_font("Arial", 'I', 11)
+                pdf.cell(0, 10, f"Figure : {os.path.basename(img_path)}", ln=True)
+                pdf.image(img_path, x=30, w=150)
+            else:
+                print(f"⚠️ Image non trouvée : {img_path}")
 
     pdf.output(filename)
-    print(f"✅ PDF généré avec image : {filename}")
+    print(f"✅ PDF généré avec toutes les images : {filename}")
 
 def save_plot_as_image(fig, filename="graphique.png"):
     """
     Sauvegarde une figure matplotlib au format image (PNG).
 
     Args:
-        fig (matplotlib.figure.Figure): objet figure matplotlib
-        filename (str): nom du fichier image de sortie (par défaut "graphique.png")
+        fig (matplotlib.figure.Figure): figure matplotlib à enregistrer
+        filename (str): nom du fichier image à générer
     """
     fig.savefig(filename, dpi=300, bbox_inches='tight')
     print(f"✅ Graphique enregistré : {filename}")

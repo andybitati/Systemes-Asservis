@@ -15,7 +15,6 @@ from controller.bode_controller import plot_bode
 import sympy as sp
 import matplotlib.pyplot as plt
 import numpy as np
-
 from control import TransferFunction
 
 def run_all(
@@ -25,7 +24,7 @@ def run_all(
     num=None, den=None, Kp=None, Ki=None, Kd=None,
     nonlinear_f=None, nonlinear_x0=None, nonlinear_eq_point=None, V_expr=None
 ):
-    # === Placeholder: valeurs par défaut si rien n’est fourni (test local)
+    # === Valeurs par défaut pour test local
     if A is None: A = [[0, 1], [-2, -3]]
     if B is None: B = [[0], [1]]
     if C is None: C = [[1, 0]]
@@ -46,13 +45,14 @@ def run_all(
     if nonlinear_eq_point is None: nonlinear_eq_point = [0, 0]
     if V_expr is None: V_expr = "x1**2 + x2**2"
 
-    # === ANALYSE SYSTÈME
+    # === ANALYSE DU SYSTÈME
     result_analysis = analyze_system(A, B, C, D)
     print("\n=== Analyse du Système ===")
     print("Pôles :", result_analysis["poles"])
     print("Système stable :", "Oui" if result_analysis["is_stable"] else "Non")
     print(result_analysis["summary"])
 
+    # === EXPORTS DES MATRICES
     Wo = result_analysis["Wo"]
     Wc = result_analysis["Wc"]
     headers_wo = [f"Col {i+1}" for i in range(Wo.shape[1])]
@@ -61,7 +61,7 @@ def run_all(
     export_to_csv(Wc.tolist(), headers_wc, filename="controlabilite.csv")
     export_to_pdf(result_analysis["summary"], filename="analyse.pdf")
 
-    # === COMMANDE ÉTAT
+    # === COMMANDE PAR ÉTAT
     feedback_result = compute_state_feedback(A, B, desired_poles, x0, t_span)
     print("\n=== Commande État ===")
     print("Gain K :", feedback_result["K"])
@@ -69,14 +69,14 @@ def run_all(
     print("Sortie (boucle fermée) :", feedback_result["y_closed"][:, :5], "...")
 
     # === OBSERVATEUR
-    K = [[5, 6]]  # fixe pour le moment
+    K = [[5, 6]]  # valeur fixe pour l’instant
     observer_result = simulate_output_feedback(A, B, C, K, observer_poles, x0, xhat0, t_span)
     print("\n=== Commande Observateur ===")
     print("Gain observateur L :", observer_result["L"])
     print("Temps :", observer_result["t"][:5], "...")
     print("État estimé (x̂) :", observer_result["x_hat"][:, :5], "...")
 
-    # === SYSTÈME NON LINÉAIRE
+    # === NON LINÉAIRE
     nonlinear_result = analyze_nonlinear_system(
         [sp.symbols('x1'), sp.symbols('x2')],
         nonlinear_f, nonlinear_x0, t_span, nonlinear_eq_point, V_expr
@@ -85,23 +85,28 @@ def run_all(
     print("Jacobienne :", nonlinear_result["jacobian"])
     print("dV/dt =", nonlinear_result["dVdt"])
 
-    # === PID CONTROL
+    # === PID
     pid_result = simulate_pid(num, den, Kp, Ki, Kd)
     print("\n=== Régulateur PID ===")
     print("Tracking Error (t<5) :", pid_result["err"][:5])
     print("Bode Phase (t<5) :", pid_result["phase"][:5])
 
-    # === Courbe PID → PNG
-    fig, ax = plt.subplots()
-    ax.plot(pid_result["t"], pid_result["y"])
-    ax.set_title("Réponse du système PID")
-    ax.set_xlabel("Temps (s)")
-    ax.set_ylabel("Sortie")
-    ax.grid(True)
-    save_plot_as_image(fig, filename="pid_response.png")
-    plt.close(fig)
+    # === SAUVEGARDE DES COURBES
+    fig_pid, ax_pid = plt.subplots()
+    ax_pid.plot(pid_result["t"], pid_result["y"])
+    ax_pid.set_title("Réponse du système PID")
+    ax_pid.set_xlabel("Temps (s)")
+    ax_pid.set_ylabel("Sortie")
+    ax_pid.grid(True)
+    save_plot_as_image(fig_pid, filename="pid_response.png")
+    plt.close(fig_pid)
 
-    # === RAPPORT GLOBAL
+    # Autres images (avec save_path)
+    plot_poles(pid_result["poles"], save_path="poles_plot.png")
+    plot_impulse_response(pid_result["system_open_loop"], save_path="impulse_plot.png")
+    plot_bode(pid_result["system_open_loop"], save_path="bode_plot.png")
+
+    # === RAPPORT FINAL
     rapport = "RAPPORT COMPLET - ControlSysLab\n\n"
     rapport += "=== MATRICES D'ENTRÉE ===\n"
     rapport += f"A = \n{np.array(A)}\n"
@@ -116,14 +121,20 @@ def run_all(
     rapport += "Fonction de transfert (boucle ouverte) :\n"
     rapport += str(pid_result["system_open_loop"]) + "\n\n"
 
-    export_to_pdf(rapport, filename="rapport_complet.pdf", image_path="pid_response.png")
+    # Génération du PDF complet avec toutes les figures
+    export_to_pdf(
+        text=rapport,
+        filename="rapport_complet.pdf",
+        title="ControlSysLab - Rapport Complet avec Figures",
+        image_paths=[
+            "pid_response.png",
+            "poles_plot.png",
+            "impulse_plot.png",
+            "bode_plot.png"
+        ]
+    )
 
-    # === AFFICHAGES
-    print("\n=== AFFICHAGES ===")
-    plot_poles(pid_result["poles"])
-    plot_impulse_response(pid_result["system_open_loop"])
-    plot_bode(pid_result["system_open_loop"])
-
+    print("\n✅ Rapport complet généré avec images incluses.")
 
 if __name__ == "__main__":
-    run_all()  # Peut recevoir des arguments plus tard depuis une interface
+    run_all()
