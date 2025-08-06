@@ -6,7 +6,7 @@ Contrôleur pour la commande par retour d’état :
 - Simulation boucle ouverte et boucle fermée
 """
 
-from model.feedback_controller import StateFeedbackController
+from modules.state_feedback import StateFeedbackController
 
 def compute_state_feedback(A, B, desired_poles, x0, t_span):
     """

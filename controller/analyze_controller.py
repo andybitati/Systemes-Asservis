@@ -7,8 +7,8 @@ Contrôleur pour l’analyse des systèmes dynamiques linéaires :
 - Analyse de la contrôlabilité et de l’observabilité
 """
 
-from model.state_system import StateSpaceSystem
-from model.analyzer import ControlObservabilityAnalyzer
+from modules.system_analysis import StateSpaceSystem
+from modules.controllability import ControlObservabilityAnalyzer
 
 def analyze_system(A, B, C, D):
     """

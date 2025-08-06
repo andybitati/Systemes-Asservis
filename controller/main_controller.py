@@ -1,4 +1,8 @@
 # main.py
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 
 """
 Ce fichier est le point d’entrée du projet ControlSysLab.

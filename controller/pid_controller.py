@@ -7,7 +7,7 @@ Contrôleur pour la régulation PID :
 - Calculs : réponse, erreur, Bode
 """
 
-from model.pid_model import PIDModel
+from modules.pid_design import PIDModel
 
 def simulate_pid(num, den, Kp, Ki, Kd):
     """

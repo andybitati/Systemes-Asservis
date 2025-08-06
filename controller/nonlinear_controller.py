@@ -7,7 +7,7 @@ Contrôleur pour les systèmes non linéaires :
 - Vérification de fonction de Lyapunov
 """
 
-from model.nonlinear_system import NonlinearSystem
+from modules.nonlinear_analysis import NonlinearSystem
 
 def analyze_nonlinear_system(state_vars, dynamics_exprs, x0, t_span, eq_point, V_expr):
     """

@@ -6,7 +6,7 @@ Contrôleur pour la commande par sortie observée :
 - Simulation du système avec estimation d’état
 """
 
-from model.output_feedback import OutputFeedbackSystem
+from modules.output_feedback import OutputFeedbackSystem
 
 def simulate_output_feedback(A, B, C, K, observer_poles, x0, xhat0, t_span):
     """
