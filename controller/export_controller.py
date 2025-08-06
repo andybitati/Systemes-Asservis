@@ -7,24 +7,33 @@ du projet ControlSysLab vers différents formats :
 """
 
 import csv
-import os  # ✅ Pour vérifier l'existence de l’image
+import os
+import numpy as np
 from fpdf import FPDF
 from datetime import datetime
 import matplotlib.pyplot as plt
 
 def export_to_csv(data, headers, filename="resultat.csv"):
     """
-    Exporte une liste de listes (ou tableau numpy) vers un fichier CSV.
+    Exporte proprement une matrice ou un vecteur vers un fichier CSV,
+    avec chaque élément dans une colonne différente.
 
     Args:
-        data (list of list or ndarray): données à exporter, ligne par ligne
+        data (list or ndarray): données à exporter (matrice ou vecteur)
         headers (list of str): noms des colonnes
-        filename (str): nom du fichier de sortie (par défaut "resultat.csv")
+        filename (str): nom du fichier exporté
     """
+    # Conversion en tableau numpy si nécessaire
+    data = np.array(data)
+
+    # Si vecteur 1D → transformer en matrice colonne (Nx1)
+    if data.ndim == 1:
+        data = data.reshape(-1, 1)
+
     with open(filename, mode='w', newline='', encoding='utf-8') as f:
         writer = csv.writer(f)
-        writer.writerow(headers)      # Écrit l’en-tête
-        writer.writerows(data)        # Écrit les lignes de données
+        writer.writerow(headers)           # En-tête
+        writer.writerows(data.tolist())    # Données ligne par ligne
     print(f"✅ CSV exporté : {filename}")
 
 def export_to_pdf(text, filename="rapport.pdf", title="ControlSysLab - Rapport Global", image_path=None):
@@ -44,7 +53,7 @@ def export_to_pdf(text, filename="rapport.pdf", title="ControlSysLab - Rapport G
     pdf.add_page()
     pdf.set_font("Arial", 'B', 16)
 
-    # Titre
+    # Titre centré
     pdf.cell(0, 10, title, ln=True, align="C")
 
     # Date
@@ -57,17 +66,16 @@ def export_to_pdf(text, filename="rapport.pdf", title="ControlSysLab - Rapport G
     for line in text.split('\n'):
         pdf.multi_cell(0, 10, line)
 
-    # Image (si fournie et existante)
+    # Image (facultative)
     if image_path:
         if os.path.exists(image_path):
             pdf.ln(10)
             pdf.set_font("Arial", 'I', 11)
             pdf.cell(0, 10, "Figure : Réponse du système PID", ln=True)
-            pdf.image(image_path, x=30, w=150)  # largeur en mm
+            pdf.image(image_path, x=30, w=150)
         else:
             print(f"⚠️ Image non trouvée : {image_path}")
 
-    # Sauvegarde finale
     pdf.output(filename)
     print(f"✅ PDF généré avec image : {filename}")
 
@@ -79,5 +87,5 @@ def save_plot_as_image(fig, filename="graphique.png"):
         fig (matplotlib.figure.Figure): objet figure matplotlib
         filename (str): nom du fichier image de sortie (par défaut "graphique.png")
     """
-    fig.savefig(filename, dpi=300, bbox_inches='tight')  # Qualité HD
+    fig.savefig(filename, dpi=300, bbox_inches='tight')
     print(f"✅ Graphique enregistré : {filename}")
