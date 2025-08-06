@@ -58,7 +58,7 @@ class StateSpaceSystem:
 
     def bode_plot(self, omega=None):
         """Génère les données pour un diagramme de Bode."""
-        mag, phase, omega = bode(self.system, omega=omega, Plot=False)
+        mag, phase, omega = bode(self.system, omega=omega, Plot=True)
         return omega, mag, phase
 
     def plot_response(self, T, y, title="Réponse temporelle", ylabel="Sortie"):
