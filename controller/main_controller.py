@@ -16,6 +16,7 @@ from controller.state_feedback_controller import compute_state_feedback
 from controller.output_feedback_controller import simulate_output_feedback
 from controller.nonlinear_controller import analyze_nonlinear_system
 from controller.pid_controller import simulate_pid
+from controller.export_controller import export_to_csv, export_to_pdf
 
 import sympy as sp
 
@@ -32,6 +33,23 @@ print("\n=== Analyse du Système ===")
 print("Pôles :", result_analysis["poles"])
 print("Système stable :", "Oui" if result_analysis["is_stable"] else "Non")
 print(result_analysis["summary"])
+
+
+# === EXPORT CSV : Matrice d'observabilité ===
+Wo = result_analysis["Wo"]
+headers = [f"Col {i+1}" for i in range(Wo.shape[1])]  # noms des colonnes
+export_to_csv(Wo.tolist(), headers, filename="observabilite.csv")
+
+# === EXPORT CSV : Matrice de contrôlabilité ===
+Wc = result_analysis["Wc"]
+headers_wc = [f"Col {i+1}" for i in range(Wc.shape[1])]
+export_to_csv(Wc.tolist(), headers_wc, filename="controlabilite.csv")
+
+# === EXPORT PDF : Résumé de l'analyse ===
+summary_text = result_analysis["summary"]
+export_to_pdf(summary_text, filename="analyse.pdf")
+
+
 
 # === MODULE 3 : Commande par retour d'état (feedback d’état) ===
 x0 = [1, 0]               # Condition initiale

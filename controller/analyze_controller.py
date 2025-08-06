@@ -26,9 +26,13 @@ def analyze_system(A, B, C, D):
 
     analyzer = ControlObservabilityAnalyzer(A, B, C)
     summary = analyzer.summary()
+    Wo = analyzer.observability_matrix()
+    Wc = analyzer.controllability_matrix()
 
     return {
         "poles": poles,
         "is_stable": stable,
-        "summary": summary
+        "Wo" : Wo,
+        "Wc" : Wc,
+        "summary" : summary
     }
