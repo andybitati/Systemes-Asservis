@@ -7,10 +7,10 @@ from controller.state_feedback_controller import compute_state_feedback
 from controller.output_feedback_controller import simulate_output_feedback
 from controller.nonlinear_controller import analyze_nonlinear_system
 from controller.pid_controller import simulate_pid
-from controller.export_controller import export_to_csv, export_to_pdf, save_plot_as_image
-from controller.poles_controller import plot_poles
-from controller.impulse_controller import plot_impulse_response
-from controller.bode_controller import plot_bode
+from export.export_controller import export_to_csv, export_to_pdf, save_plot_as_image
+from simulation.poles_controller import plot_poles
+from simulation.impulse_controller import plot_impulse_response
+from simulation.bode_controller import plot_bode
 
 import sympy as sp
 import matplotlib.pyplot as plt
