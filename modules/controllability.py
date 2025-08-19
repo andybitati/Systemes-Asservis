@@ -1,10 +1,11 @@
 import numpy as np
 
 class ControlObservabilityAnalyzer:
-    def __init__(self, A, B, C):
+    def __init__(self, A, B, C,D):
         self.A = np.array(A, dtype=float)
         self.B = np.array(B, dtype=float)
         self.C = np.array(C, dtype=float)
+        self.D = np.array(D, dtype=float)
 
         self.n = self.A.shape[0]
 
@@ -46,7 +47,7 @@ class ControlObservabilityAnalyzer:
         """
         verdict = ""
         verdict += f"Rang de Wc : {np.linalg.matrix_rank(self.controllability_matrix())} "
-        verdict += f"=> {'Contrôlable' if self.is_controllable() else 'Non contrôlable'}\n"
+        verdict += f"=> {'le système est Contrôlable' if self.is_controllable() else "le système n'est pas contrôlable"}\n"
         verdict += f"Rang de Wo : {np.linalg.matrix_rank(self.observability_matrix())} "
-        verdict += f"=> {'Observable' if self.is_observable() else 'Non observable'}"
+        verdict += f"=> {'le système est Observable' if self.is_observable() else "le sytème n'est pas observable"}"
         return verdict

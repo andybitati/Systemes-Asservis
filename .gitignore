@@ -1,0 +1,24 @@
+# Fichiers compilés Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Dossiers temporaires de l'IDE
+.vscode/
+.idea/
+
+# Fichiers temporaires ou exports
+*.log
+*.tmp
+*.pdf
+*.png
+*.csv
+
+# Dossier export
+/export/
+# Caches Python
+__pycache__/
+*.pyc
+
+# Dossier virtuel
+.venv/
